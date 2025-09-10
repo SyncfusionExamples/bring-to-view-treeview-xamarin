@@ -1,2 +1,85 @@
 # bring-to-view-treeview-xamarin
-Bring Into View
+This example illustrates how to Bring TreeView into View
+
+## Sample
+
+### XAML
+```xaml
+<ContentPage.Behaviors>
+    <local:TreeViewBehavior/>
+</ContentPage.Behaviors>
+
+<ContentPage.BindingContext>
+    <local:FileManagerViewModel x:Name="viewModel"/>
+</ContentPage.BindingContext>
+
+<StackLayout>
+    <Button x:Name="bringIntoView" Text="BringIntoView" HeightRequest="50"/>
+    <syncfusion:SfTreeView x:Name="treeView" ChildPropertyName="SubFiles" ItemTemplateContextType="Node" AutoExpandMode="AllNodesExpanded" ItemsSource="{Binding ImageNodeInfo}">
+        <syncfusion:SfTreeView.ItemTemplate>
+            <DataTemplate>
+                <Grid x:Name="grid" RowSpacing="0" >
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="40" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Image Source="{Binding Content.ImageIcon}" VerticalOptions="Center" HorizontalOptions="Center" HeightRequest="35" WidthRequest="35"/>
+                    <Grid Grid.Column="1" RowSpacing="1" Padding="1,0,0,0" VerticalOptions="Center">
+                        <Label LineBreakMode="NoWrap" Text="{Binding Content.ItemName}" VerticalTextAlignment="Center"/>
+                    </Grid>
+                </Grid>
+            </DataTemplate>
+        </syncfusion:SfTreeView.ItemTemplate>
+    </syncfusion:SfTreeView>
+</StackLayout>
+```
+
+### Behavior
+```csharp
+public class TreeViewBehavior : Behavior<ContentPage>
+{
+    #region Fields
+
+    private SfTreeView TreeView;
+    private Button Button;
+    #endregion
+
+    #region Overrides
+    protected override void OnAttachedTo(ContentPage bindable)
+    {
+        TreeView = bindable.FindByName<SfTreeView>("treeView");
+        Button = bindable.FindByName<Button>("bringIntoView");
+        Button.Clicked += BringIntoView_Clicked;
+
+        base.OnAttachedTo(bindable);
+    }
+
+    protected override void OnDetachingFrom(ContentPage bindable)
+    {
+        Button.Clicked -= BringIntoView_Clicked;
+        Button = null;
+        TreeView = null;
+        base.OnDetachingFrom(bindable);
+    }
+
+    #endregion
+
+    #region CallBack
+    private void BringIntoView_Clicked(object sender, EventArgs e)
+    {
+        var viewModel = (sender as Button).BindingContext as FileManagerViewModel;
+        var count = viewModel.ImageNodeInfo.Count;
+        var data = viewModel.ImageNodeInfo[count - 1];
+        TreeView.BringIntoView(data);
+    }
+    #endregion
+}
+```
+
+## Requirements to run the demo
+
+To run the demo, refer to [System Requirements for Xamarin](https://help.syncfusion.com/xamarin/system-requirements)
+
+## Troubleshooting
+### Path too long exception
+If you are facing path too long exception when building this example project, close Visual Studio and rename the repository to short and build the project.
